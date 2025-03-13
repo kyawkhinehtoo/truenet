@@ -85,7 +85,8 @@ trait SMSTrait
     private function processSingleSMS(string $phone, string $message): bool
     {
         $sms_response = $this->sendSMS($phone, $message);
-        return isset($sms_response['status']) && $this->checkSMSStatus($sms_response['messageId']);
+        return isset($sms_response['messages'][0]['status']) && 
+               in_array($sms_response['messages'][0]['status'], ['Accepted', 'Sent', 'Delivered']);
     }
 
     public function deliverSMS($phones, string $message): bool

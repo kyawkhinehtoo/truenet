@@ -70,7 +70,7 @@ class ReminderSMSJobNoInvoice implements ShouldQueue
                 //     production start
                    $success = $this->deliverSMS($reminder->phone_1, $message);
                 //       production end
-
+                \Log::debug('Check Response. : ' . $success);
                     if ($success) {
                         $reminder_data = BillReminder::find($this->id);
                         $reminder_data->sms_sent_at = date('Y-m-d H:i:s');
