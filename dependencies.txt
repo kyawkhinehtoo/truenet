@@ -1,0 +1,20 @@
+ashallendesign/short-url
+    composer require ashallendesign/short-url
+    php artisan vendor:publish --provider="AshAllenDesign\ShortURL\Providers\ShortURLProvider"
+
+barryvdh/laravel-snappy
+    composer require barryvdh/laravel-snappy
+    php artisan vendor:publish --provider="Barryvdh\Snappy\ServiceProvider"
+carlos-meneses/laravel-mpdf
+    composer require carlos-meneses/laravel-mpdf
+    php artisan vendor:publish --tag=mpdf-config
+maatwebsite/excel
+    composer require "maatwebsite/excel:^3.1"
+    php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider" --tag=config
+phpoffice/phpspreadsheet
+pusher/pusher-php-server
+    composer require pusher/pusher-php-server
+spatie/laravel-activitylog
+    composer require spatie/laravel-activitylog
+    php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="activitylog-migrations"
+    php artisan vendor:publish --provider="Spatie\Activitylog\ActivitylogServiceProvider" --tag="activitylog-config"

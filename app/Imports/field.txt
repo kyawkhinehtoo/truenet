@@ -1,0 +1,75 @@
+    id
+    name
+    phone_no
+    address
+    lat_long
+    township
+    package
+    bandwidth
+    installation_team
+    sale_person
+    sale_source
+    sale_remark
+    order_date
+    prefer_install_date
+    installation_date
+    service_activation_date
+    onu_serial
+    pop_site
+    gpon_olt
+    gpon_frame
+    gpon_slot
+    gpon_port
+
+
+    vlan
+    wlan_name
+    wlan_password
+    pppoe_account
+    pppoe_password
+    devices
+    status
+$cus->nrc = $row['nrc'];                 
+$cus->social_account = $row['social_account'];      
+$cus->email = $row['email'];               
+$cus->project_id = $row['project'];             
+$cus->extra_bandwidth = $row['extra_bandwidth'];     
+$cus->installation_remark = $row['installation_remark']; 
+$cus->fiber_distance = $row['fiber_distance'];      
+$cus->onu_power = $row['onu_power'];           
+$cus->gpon_ontid = $row['ont_id'];              
+$cus->gem_port = $row['gem_port'];                    
+$cus->customer_type = $row['customer_type'];       
+$cus->service_off_date = $row['service_end_date'];    
+
+
+$cus->ftth_id = trim($row['id']);
+$cus->name = trim($row['name']);
+$cus->phone_1 = trim($row['phone_no']);
+$cus->address = trim($row['address']);
+$cus->location = trim($row['lat_long']);
+$cus->order_date = (trim($row['order_date'])) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject(trim($row['order_date'])) : null;
+$cus->installation_date = (trim($row['installation_date'])) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject(trim($row['installation_date'])) : null;
+$cus->prefer_install_date = (trim($row['prefer_install_date'])) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject(trim($row['prefer_install_date'])) : null;
+$cus->service_activation_date = (trim($row['service_activation_date'])) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject(trim($row['service_activation_date'])) : null;
+$cus->sale_channel = trim($row['sale_source']);
+$cus->sale_remark = trim($row['sale_remark']);
+$cus->township_id = ($township_id) ? $township_id->id : null;
+$cus->package_id = ($package_id) ? $package_id->id : null;
+$cus->sale_person_id = ($sale_person_id) ? $sale_person_id->id : null;
+$cus->status_id = ($status_id) ? $status_id->id : 1;
+$cus->subcom_id = ($subcom_id) ? $subcom_id->id : null;
+$cus->sn_id = ($sn_id) ? $sn_id->id : null;
+$cus->pop_id = $pop_id;
+$cus->onu_serial = trim($row['onu_serial']);
+$cus->deleted = 0;
+$cus->pppoe_account = trim($row['pppoe_account']);
+$cus->pppoe_password = trim($row['pppoe_password']);
+$cus->customer_type = 1;
+$cus->bundle = ($bundle) ? $bundle->id : null;
+$cus->project_id = $project_id;
+$cus->vlan = trim($row['vlan']);
+$cus->wlan_ssid = trim($row['wlan_name']);
+$cus->wlan_password = trim($row['wlan_password']);
+$cus->pop_device_id = $pop_device_id;
+$cus->gpon_ontid = trim($row['onu_id']);

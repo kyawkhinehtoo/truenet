@@ -1,0 +1,10 @@
+:root {
+
+    --dp-input-padding: 9px 30px 10px 12px !important; /*Padding in the input*/
+     /*Font sizes*/
+     --dp-font-size: 0.9rem !important; /*Default font-size*/
+  }
+  .dp__theme_light {
+    --dp-border-color:rgb(229 231 235) !important;
+  }
+  
