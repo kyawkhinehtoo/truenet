@@ -59,17 +59,17 @@ class ReminderSMSJobNoInvoice implements ShouldQueue
                     $message = $this->replaceReminderMarkup($this->id, $sms_message);
 
                     //testing start
-                    $success = true;
-                    $pattern = "/^09[0-9]{7,9}$/";
-                    if (preg_match($pattern, $reminder->phone_1)) {
-                        Storage::append('reminder.log', $reminder->phone_1 . " : " . $message);
-                        $success = true;
-                    }
+                    // $success = true;
+                    // $pattern = "/^09[0-9]{7,9}$/";
+                    // if (preg_match($pattern, $reminder->phone_1)) {
+                    //     Storage::append('reminder.log', $reminder->phone_1 . " : " . $message);
+                    //     $success = true;
+                    // }
                     //testing end
 
-                    // production start
-                   // $success = $this->deliverSMS($reminder->phone_1, $message);
-                    //   production end
+                //     production start
+                   $success = $this->deliverSMS($reminder->phone_1, $message);
+                //       production end
 
                     if ($success) {
                         $reminder_data = BillReminder::find($this->id);

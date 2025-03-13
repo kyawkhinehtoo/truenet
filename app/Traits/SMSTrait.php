@@ -90,6 +90,7 @@ trait SMSTrait
 
     public function deliverSMS($phones, string $message): bool
     {
+        $this->initializeSMSGateway();
         if (is_array($phones)) {
             \Log::debug('Before sanitise Phone No. : ' . json_encode($phones));
             $phones = array_unique(array_map(fn($phone) => $this->sanitisePhone(trim($phone)), $phones));
@@ -118,6 +119,10 @@ trait SMSTrait
     public function sendSMS($phone, string $message, bool $bulk = false): ?array
         {
             if (!$this->header || !$this->single_sms_url || !$this->bulk_sms_url) {
+
+                \Log::error('SMS header'.$this->header);
+                \Log::error('SMS single'.$this->single_sms_url);
+                \Log::error('SMS bulk'.$this->bulk_sms_url);
                 \Log::error('SMS Gateway not properly initialized');
                 return null;
             }

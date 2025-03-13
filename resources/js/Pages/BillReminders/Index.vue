@@ -29,9 +29,9 @@
           <a @click="downloadExcel"
             class="inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center">Export
             <i class="ml-1 fa fa-download text-white"></i></a>
-          <a @click="openUploadView"
-            class="inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center">Import
-            <i class="ml-1 fa fa-upload text-white"></i></a>
+          <a :href="route('bill-reminders.upload-view')" target="_blank"
+                class="inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center" >Import
+                <i class="ml-1 fa fa-upload text-white"></i></a>
           <a @click="sendAllReminder"
             class="inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 items-center" v-if="smsgateway && smsgateway?.status == '1'">Send
             Reminder To All<i class="ml-1 fa fa-sms fa-xl text-white" ></i></a>
@@ -305,7 +305,7 @@
 
 <script>
 import { ref, watch, onMounted } from 'vue';
-import { router, Head, useForm } from '@inertiajs/vue3';
+import { router, Head, useForm,Link } from '@inertiajs/vue3';
 import AppLayout from "@/Layouts/AppLayout";
 import Pagination from "@/Components/Pagination";
 import BillReminderProgress from "@/Components/BillReminderProgress";
@@ -314,6 +314,7 @@ export default {
   components: {
     AppLayout,
     BillReminderProgress,
+    Link,
     Pagination
   },
 
