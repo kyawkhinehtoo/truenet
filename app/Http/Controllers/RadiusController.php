@@ -226,6 +226,11 @@ class RadiusController extends Controller
                 $data['srvid'] = $request->srv['srvid'];
                 $data['enableuser'] = ($request->status == true) ? 1 : 0;
                 $data['expiration'] = $request->expiration;
+                if( $request->expiration){
+                    $customer->service_off_date = $request->expiration;
+                    $customer->update();
+                }
+              
                 $response = null;
                 try {
                     $this->loginRadius();

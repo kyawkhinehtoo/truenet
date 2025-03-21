@@ -35,11 +35,11 @@ class BillReminder extends Model
     {
         return $this->hasMany(User::class,'id','send_by');
     }
-    public static function getCustomersForReminder($daysBeforeExpiry = 5)
+    public static function getCustomersForReminder($expiration)
     {
-        $today = Carbon::today();
-        $endDate = $today->copy()->addDays($daysBeforeExpiry);
-        
+      
+        $startDate = Carbon::parse($expiration[0])->format('Y-m-d');
+        $endDate = Carbon::parse($expiration[1])->format('Y-m-d');
         // Clear existing data in the table
         self::truncate();
         
@@ -61,7 +61,8 @@ class BillReminder extends Model
                     'p.price as package_price'
                 )
                 ->where('c.status_id', 2)
-                ->whereBetween('c.service_off_date', [$today->format('Y-m-d'), $endDate->format('Y-m-d')])
+                ->where('c.service_off_date', '>=', $startDate)
+                ->where('c.service_off_date', '<=', Carbon::parse($endDate)->endOfDay())
         );
         
         // Return data from the table

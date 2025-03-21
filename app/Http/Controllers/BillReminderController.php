@@ -20,11 +20,12 @@ class BillReminderController extends Controller
      */
     public function index(Request $request)
     {
+      
         $smsgateway = SmsGateway::first();
         $daysBeforeExpiry = (int)$request->input('days', 5);
-        $today = Carbon::now()->format('Y-m-d');
-        $endDate = Carbon::now()->addDays($daysBeforeExpiry)->format('Y-m-d');
-
+        
+        
+    
         $query = BillReminder::query();
 
         // Apply filters if they exist
@@ -41,19 +42,29 @@ class BillReminderController extends Controller
         }
 
         if ($request->filled('filter_expiry')) {
-            $query->whereDate('service_off_date', $request->filter_expiry);
+            $startDate = Carbon::parse($request?->filter_expiry[0])->format('Y-m-d');
+            $endDate =Carbon::parse($request?->filter_expiry[1])->format('Y-m-d');
+  
+            $query->where('service_off_date', '>=', $startDate);
+            $query->where('service_off_date', '<=',  Carbon::parse($endDate)->endOfDay());
         }
 
-        // Continue with your existing query conditions
-        $query->whereDate('service_off_date', '>=', $today)
-            ->whereDate('service_off_date', '<=', $endDate);
-        if ($request->filled('filter_no_phone') && $request->filter_no_phone) {
-            $query->where(function ($query) {
-                $query->whereNull('phone_1')
-                    ->orWhere('phone_1', '')
-                    ->orWhereRaw("TRIM(phone_1) = ''");
-            });
+        if ($request->has('filter_no_phone')) {
+            $noPhoneValue = $request->filter_no_phone;
+            // Handle string 'true'/'false' from query parameters
+            if (is_string($noPhoneValue) && $noPhoneValue === 'true') {
+                $noPhoneValue = true;
+            }
+            
+            if ($noPhoneValue === true || $noPhoneValue === 1) {
+                $query->where(function ($query) {
+                    $query->whereNull('phone_1')
+                        ->orWhere('phone_1', '')
+                        ->orWhereRaw("TRIM(phone_1) = ''");
+                });
+            }
         }
+        
         $customers = $query->paginate(10);
         $customers->appends($request->all())->links();
         return Inertia::render('BillReminders/Index', [
@@ -67,8 +78,12 @@ class BillReminderController extends Controller
 
     public function createReminder(Request $request)
     {
-        $daysBeforeExpiry = (int)$request->input('days', 5);
-        BillReminder::getCustomersForReminder($daysBeforeExpiry);
+        $request->validate([
+            'expiration' => 'required|array',
+        ]);
+        $expiration = $request->input('expiration');
+
+        BillReminder::getCustomersForReminder($expiration);
         return redirect()->route('bill-reminders.index')
             ->with('message', 'Bill reminder created successfully.');
     }

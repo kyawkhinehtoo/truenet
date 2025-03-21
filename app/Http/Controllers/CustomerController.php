@@ -775,7 +775,7 @@ class CustomerController extends Controller
                     $date = new DateTime();
                     $date->modify('-1 year');
                     $township_id = 0;
-                    if($radiusUser->state && trim($radiusUser->state) != '-- YANGON --'){
+                    if($radiusUser->state && trim($radiusUser->state) != '-- YANGON --' && trim($radiusUser->state)!= '' ){
                         $township = Township::where('name', $radiusUser->state)->first();
                         if($township){
                             $township_id = $township->id;

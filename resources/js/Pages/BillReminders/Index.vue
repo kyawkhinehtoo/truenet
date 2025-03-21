@@ -8,41 +8,47 @@
     <div class="py-12">
       <BillReminderProgress :progress="smsprogress" @dismiss="dismiss" v-if="showSmsProgress" />
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="gap-2 bg-white shadow sm:rounded-lg space-x-2 py-2 px-2 md:px-2 grid grid-cols-5 items-end ">
-          <div class="">
+        <div class="bg-white shadow sm:rounded-lg py-4 px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4 items-end">
+          <div class="col-span-1 sm:col-span-3">
             <label for="days" class="block text-sm font-medium text-gray-700">Days Before Service Expiry:</label>
-            <div class="inline-flex items-baseline">
-              <input type="number" id="days" v-model="days"
-                class="mt-1 py-2 block w-20 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                min="1" max="30">
-              <a @click="createList"
-                class="ml-2 inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 items-center">Generate
-                <i class="ml-1 fa fa-list text-white"></i></a>
+            <div class="flex items-center space-x-2">
+              <div class="flex-grow">
+                <VueDatePicker v-model="expiration" :range="{ partialRange: false }" placeholder="Please choose Expiry Date" 
+                  :enable-time-picker="false" model-type="yyyy-MM-dd" id="order_date"
+                  class="w-full text-gray-700 text-sm focus:ring focus:ring-indigo-500 focus:border-indigo-500 focus:ring-opacity-10 focus:outline-none" />
+              </div>
+              <button @click="createList"
+                class="inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 items-center">
+                Generate <i class="ml-1 fa fa-list text-white"></i>
+              </button>
             </div>
-
           </div>
 
-          <a @click="emptyList"
-            class="inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 items-center">Empty
-            List<i class="ml-1 fa fa-trash text-white"></i></a>
+          <button @click="emptyList"
+            class="col-span-1 inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 items-center">
+            Empty List<i class="ml-1 fa fa-trash text-white"></i>
+          </button>
 
-          <a @click="downloadExcel"
-            class="inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center">Export
-            <i class="ml-1 fa fa-download text-white"></i></a>
+          <button @click="downloadExcel"
+            class="col-span-1 inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center">
+            Export <i class="ml-1 fa fa-download text-white"></i>
+          </button>
+          
           <a :href="route('bill-reminders.upload-view')" target="_blank"
-                class="inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center" >Import
-                <i class="ml-1 fa fa-upload text-white"></i></a>
-          <a @click="sendAllReminder"
-            class="inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 items-center" v-if="smsgateway && smsgateway?.status == '1'">Send
-            Reminder To All<i class="ml-1 fa fa-sms fa-xl text-white" ></i></a>
-
+            class="col-span-1 inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center">
+            Import <i class="ml-1 fa fa-upload text-white"></i>
+          </a>
+          
+          <button @click="sendAllReminder" v-if="smsgateway && smsgateway?.status == '1'"
+            class="col-span-1 inline-flex cursor-pointer justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 items-center">
+            Send All <i class="ml-2 fa fa-sms fa-xl text-white"></i>
+          </button>
         </div>
-
         <!-- Filter Form -->
 
-        <div class="mt-2 bg-white overflow-hidden shadow-sm sm:rounded-lg p-4">
+        <div class="mt-2 bg-white  shadow-sm sm:rounded-lg p-4 z-20">
           <h3 class="text-lg font-medium text-gray-900 mb-4">Filter Customers</h3>
-          <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
             <div>
               <label for="filter_id" class="block text-sm font-medium text-gray-700">Customer ID</label>
               <input type="text" id="filter_id" v-model="filters.id"
@@ -61,11 +67,13 @@
                 class="mt-1 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 placeholder="Search by phone">
             </div>
-            <div>
+            <div class="col-span-2">
               <label for="filter_expiry" class="block text-sm font-medium text-gray-700">Expiry Date</label>
-              <input type="date" id="filter_expiry" v-model="filters.expiry_date"
-                class="mt-1 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-            </div>
+            
+                <VueDatePicker v-model="filters.expiry_date" :range="{ partialRange: false }" placeholder="Please choose Expiry Date" 
+                :enable-time-picker="false" model-type="yyyy-MM-dd" id="filter_expiry"
+                class="mt-1 w-full z-100 text-gray-700 text-sm focus:ring focus:ring-indigo-500 focus:border-indigo-500 focus:ring-opacity-10 focus:outline-none" />
+              </div>
             <div class="flex items-center mt-6">
               <input type="checkbox" id="filter_no_phone" v-model="filters.no_phone"
                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
@@ -309,11 +317,14 @@ import { router, Head, useForm,Link } from '@inertiajs/vue3';
 import AppLayout from "@/Layouts/AppLayout";
 import Pagination from "@/Components/Pagination";
 import BillReminderProgress from "@/Components/BillReminderProgress";
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 export default {
   name: "Bill Reminder",
   components: {
     AppLayout,
     BillReminderProgress,
+    VueDatePicker,
     Link,
     Pagination
   },
@@ -331,6 +342,7 @@ export default {
     const selectAll = ref(false);
     const editing = ref(false);
     const days = ref(props.daysBeforeExpiry < 1 ? props.daysBeforeExpiry : 1);
+    const expiration = ref("")
     const smsprogress = ref(0);
     const showSmsProgress = ref(false);
     const form = useForm({
@@ -458,7 +470,7 @@ export default {
         toast: false
       }).then((result) => {
         if (result.isConfirmed) {
-          router.post(route('bill-reminders.create-reminder'), { days: days.value }, {
+          router.post(route('bill-reminders.create-reminder'), { expiration: expiration.value }, {
             onSuccess: (page) => {
               Toast.fire({
                 icon: "success",
@@ -671,7 +683,8 @@ export default {
       clearNoPhoneCustomers,
       showSmsProgress,
       smsprogress,
-      dismiss
+      dismiss,
+      expiration
     };
   }
 }
