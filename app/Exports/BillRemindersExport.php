@@ -35,28 +35,37 @@ class BillRemindersExport implements FromQuery, WithMapping, WithHeadings,WithCo
         if ($this->request->filled('filter_id')) {
             $query->where('ftth_id', 'like', '%' . $this->request->filter_id . '%');
         }
-        
+
         if ($this->request->filled('filter_name')) {
             $query->where('name', 'like', '%' . $this->request->filter_name . '%');
         }
-        
+
         if ($this->request->filled('filter_phone')) {
             $query->where('phone_1', 'like', '%' . $this->request->filter_phone . '%');
         }
-        
+
         if ($this->request->filled('filter_expiry')) {
-            $query->whereDate('service_off_date', $this->request->filter_expiry);
+            $startDate = Carbon::parse($this->request?->filter_expiry[0])->format('Y-m-d');
+            $endDate =Carbon::parse($this->request?->filter_expiry[1])->format('Y-m-d');
+  
+            $query->where('service_off_date', '>=', $startDate);
+            $query->where('service_off_date', '<=',  Carbon::parse($endDate)->endOfDay());
         }
-        
-        // Continue with your existing query conditions
-        $query->whereDate('service_off_date', '>=', $today)
-              ->whereDate('service_off_date', '<=', $endDate);
-        if ($this->request->filled('filter_no_phone') && $this->request->filter_no_phone) {
-            $query->where(function($query) {
-                $query->whereNull('phone_1')
-                    ->orWhere('phone_1', '')
-                    ->orWhereRaw("TRIM(phone_1) = ''");
-            });
+
+        if ($this->request->has('filter_no_phone')) {
+            $noPhoneValue = $this->request->filter_no_phone;
+            // Handle string 'true'/'false' from query parameters
+            if (is_string($noPhoneValue) && $noPhoneValue === 'true') {
+                $noPhoneValue = true;
+            }
+            
+            if ($noPhoneValue === true || $noPhoneValue === 1) {
+                $query->where(function ($query) {
+                    $query->whereNull('phone_1')
+                        ->orWhere('phone_1', '')
+                        ->orWhereRaw("TRIM(phone_1) = ''");
+                });
+            }
         }
         return $query;
     }
