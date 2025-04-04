@@ -765,7 +765,8 @@ class CustomerController extends Controller
 
             if ($radiusUsers) {
                 foreach($radiusUsers as $radiusUser) {
-                    echo $radiusUser->username.PHP_EOL;
+                   if(trim($radiusUser->username) == 'tf1110016') {
+                    echo $radiusUser->username.'|'.$radiusUser->expiration.PHP_EOL;
                     $customer = Customer::where('ftth_id', trim($radiusUser->username))->first();
                     $phone = trim($radiusUser->phone);
                     if(trim($radiusUser->mobile) != ''){
@@ -841,6 +842,8 @@ class CustomerController extends Controller
                        // echo $customer->ftth_id.'Created!'.PHP_EOL;
                     }
                 }
+                   }
+                  
                 echo "Done";
             }
         }
