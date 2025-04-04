@@ -812,7 +812,7 @@ class CustomerController extends Controller
                         $customer->deleted = 0;
                         $customer->pppoe_account = $radiusUser->username;
                         $customer->project_id = 1;
-                        $customer->service_off_date = $radiusUser->expiration ? Carbon::parse($radiusUser->expiration)->format('Y-m-d H:i:s') : null;
+                        $customer->service_off_date = $radiusUser->expiration ?  Carbon::parse($radiusUser->expiration)->setTimezone('Asia/Yangon')->format('Y-m-d H:i:s') : null;
                         $customer->installation_remark = $radiusUser->custattr;
                         $customer->update();
                        
@@ -836,7 +836,7 @@ class CustomerController extends Controller
                         $customer->deleted = 0;
                         $customer->pppoe_account = $radiusUser->username;
                         $customer->project_id = 1;
-                        $customer->service_off_date = $radiusUser->expiration ? Carbon::parse($radiusUser->expiration)->format('Y-m-d H:i:s') : null;
+                        $customer->service_off_date = $radiusUser->expiration ?  Carbon::parse($radiusUser->expiration)->setTimezone('Asia/Yangon')->format('Y-m-d H:i:s') : null;
                         $customer->installation_remark = $radiusUser->custattr;
                         $customer->save();
                        // echo $customer->ftth_id.'Created!'.PHP_EOL;
