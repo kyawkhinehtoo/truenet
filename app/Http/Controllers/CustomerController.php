@@ -228,7 +228,7 @@ class CustomerController extends Controller
 
                 $query->orderBy($sort_by, 'desc');
             }, function ($query) {
-                $query->orderBy('customers.ftth_id', 'desc');
+                $query->orderBy('customers.id', 'desc');
             })
             ->select('customers.id as id', 'customers.ftth_id as ftth_id', 'customers.name as name', 'customers.prefer_install_date as prefer_install_date', 'customers.order_date as order_date', 'customers.phone_1 as phone', 'townships.name as township', 'packages.name as package', 'status.name as status', 'status.color as color', 'customers.pppoe_account as pppoe_account')
             ->paginate(10);
@@ -356,22 +356,7 @@ class CustomerController extends Controller
         $auto_ftth_id = $request->ftth_id;
         $check_id = Customer::where('ftth_id', '=', $auto_ftth_id)->first();
         if ($check_id) {
-            //already exists
-            if ($request->township && $request->package) {
-                $max_c_id = $this->getmaxid();
-                $city_id = $request->township['city_id'];
-                $pacakge_type = $request->package['type'];
-                $result = null;
-                foreach ($max_c_id as $value) {
-                    if ((int)$value['id'] == (int)$city_id) {
-                        $result = $value['value'];
-                    }
-                }
-                if ($result) {
-                    //   $max_id = $max_c_id [$request->city_id];
-                    $auto_ftth_id = $request->township['city_code'] . str_pad($result + 1, 6, '0', STR_PAD_LEFT) . 'FX';
-                }
-            }
+            $auto_ftth_id = 'tf111'. str_pad($this->getmaxid() + 1, 5, '0', STR_PAD_LEFT);
         }
         $customer = new Customer();
         foreach ($user_perm as $key => $value) {
@@ -693,41 +678,27 @@ class CustomerController extends Controller
             return $query->where('customers.deleted', '=', 0)
                 ->orWhereNull('customers.deleted');
         })->get();
-        $cities = City::all();
-        $max_c_id = array();
+        $max_id = 0;
 
-        foreach ($cities as $city) {
+
 
             $cid = array();
             foreach ($customers as $customer) {
                 ///(^TCL[0-9]{5}-[A-Z]{3,})$/
-                $reg = "/(^" . $city->short_code . "[0-9]{6}[A-Z 0-9]{2,})$/";
-                if (preg_match($reg, $customer->ftth_id)) {
-                    $pattern = '/\d+/'; // Regular expression to match integers
-                    preg_match($pattern, $customer->ftth_id, $matches);
-
-                    if (isset($matches[0])) {
-                        $integer = (int)$matches[0];
+                $reg = "/^tf\d{3}(\d{5})$/";
+                if (preg_match($reg, $customer->ftth_id,$matches)) {
+                   
+                    if (isset($matches[1])) {
+                        $integer = (int)$matches[1];
                         array_push($cid, $integer);
                     }
                 }
             }
             if (!empty($cid)) {
                 $max_id = max($cid);
-                //  dd($max_id);
-            } else {
-                $max_id = 0;
-            }
-
-
-            $id_array = array('id' => $city->id, 'value' => $max_id);
-
-            array_push($max_c_id, $id_array);
-        }
-
-        //   if(sizeof($max_c_id))
-        //dd($max_c_id);
-        return $max_c_id;
+            
+            } 
+        return $max_id;
     }
     /**
      * Remove the specified resource from storage.
@@ -860,6 +831,28 @@ class CustomerController extends Controller
             return redirect()->back();
         }
     }
+    public function expireToSuspend(){
+      
+    if (RadiusController::checkRadiusEnable()) {
+        $radius = new RadiusController();
+        $date = Carbon::now();
+        $date->modify('-3 months');
+        $expiration_from = '2000-01-01 00:00:00';
+        $expiration_to =  $date->format('Y-m-d').' 23:59:59' ;
+        $expiration = array('from' => $expiration_from, 'to' => $expiration_to);
+        $customers = $radius->getExpiredRange($expiration);
+        $customers = json_decode($customers);
+        $status_id = Status::where('name', 'Suspended')->pluck('id')->first();
 
-    
+            foreach ($customers as $customer) {
+                $customer = Customer::where('ftth_id', trim($customer->username))->first();
+                if ($customer) {
+                    $customer->status_id = $status_id;
+                    $customer->update();
+                    echo $customer->ftth_id.'Suspended! <br />';
+                }
+            }
+            echo "Done";
+        }
+    }
 }

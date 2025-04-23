@@ -976,7 +976,7 @@ export default {
       const currentYear = new Date().getFullYear();
 
       // If the abbreviation is less than 3 characters, pad it (optional) and add the current year
-      return abbreviation.padEnd(3, abbreviation[abbreviation.length - 1] || '') + '@' + currentYear + 'FIP';
+      return abbreviation.padEnd(3, abbreviation[abbreviation.length - 1] || '') + '@' + currentYear + 'TN';
     }
     function generatePassword() {
       // var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";

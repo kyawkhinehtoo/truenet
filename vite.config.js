@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue";
-import path from "path"; // Import path for aliasing
+import path from "path";
 
 export default defineConfig({
     plugins: [
@@ -20,8 +20,15 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            "@": path.resolve(__dirname, "resources/js"), // Set alias for '@/'
+            "@": path.resolve(__dirname, "resources/js"),
         },
-        extensions: [".js", ".json", ".vue"], // Automatically resolve these extensions
+        extensions: [".js", ".json", ".vue"],
+    },
+    server: {
+        host: "localhost", // or "0.0.0.0" if needed
+        port: 5173,
+        cors: {
+            origin: "http://truenet.test", // Allow your Laravel domain
+        },
     },
 });

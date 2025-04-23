@@ -772,10 +772,7 @@ export default {
     }
 
     function goID() {
-      let city_code = form.township['city_code'];
-      let city_id = form.township['city_id'];
-      var data = props.max_id.filter((id) => id.id == city_id)[0];
-      form.ftth_id = city_code + ('000000' + (parseInt(data.value) + 1)).slice(-6) + 'FX';
+      form.ftth_id = 'tf111' + ('00000' + (parseInt(props.max_id) + 1)).slice(-5);
     }
     function fillPppoe() {
       if (!form.pppoe_account) {
@@ -813,7 +810,7 @@ export default {
       const currentYear = new Date().getFullYear();
 
       // If the abbreviation is less than 3 characters, pad it (optional) and add the current year
-      return abbreviation.padEnd(3, abbreviation[abbreviation.length - 1] || '') + '@' + currentYear + 'FIP';
+      return abbreviation.padEnd(3, abbreviation[abbreviation.length - 1] || '') + '@' + currentYear + 'TN';
     }
     function generatePassword() {
       // var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";

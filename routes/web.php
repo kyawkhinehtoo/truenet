@@ -275,6 +275,7 @@ Route::group(['middleware'=>['auth','role']],function(){
 	Route::get('/bill-reminders/upload',[ExcelController::class,'uploadBillReminderView'])->name('bill-reminders.upload-view');
 	Route::post('importBillReminder',[ExcelController::class,'importBillReminder'])->name('importBillReminder');
 	
+	Route::get('/auto-expire',[App\Http\Controllers\CustomerController::class, 'expireToSuspend'])->name('auto-expire');
 });
 
 Route::get('/s/{shortURLKey}', '\AshAllenDesign\ShortURL\Controllers\ShortURLController');

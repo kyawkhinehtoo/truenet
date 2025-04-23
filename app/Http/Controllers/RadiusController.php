@@ -513,6 +513,11 @@ class RadiusController extends Controller
             ->where('customers.id', '=', $customer_id)
             ->select('customers.*', 'townships.name as township_name', 'status.type as status_type', 'cities.name as city', 'dn_ports.name as dn_name', 'sn_ports.name as sn_name', 'packages.radius_package as srvid')
             ->first();
+            $today = new DateTime('now');
+            // $today->modify('last day of this month');
+            $today->modify('+3  day');
+            $today->setTime(23, 59, 0);
+            Customer::where('id', $customer_id)->update(['service_off_date' => $today->format('Y-m-d H:i:s')]);
         $billconfig = BillingConfig::first();
         if (isset($data->pppoe_account) && isset($data->pppoe_password)) {
 
@@ -538,10 +543,7 @@ class RadiusController extends Controller
             $user_data['gpslat'] = (isset($location[0])) ? $location[0] : '0.0';
             $user_data['gpslong'] = (isset($location[1])) ?  $location[1] : '0.0';
             $user_data['usemacauth'] = 0;
-            $today = new DateTime('now');
-            // $today->modify('last day of this month');
-            $today->modify('+3  day');
-            $today->setTime(23, 59, 0);
+           
             $user_data['expiration'] = ($data->service_off_date) ? $data->service_off_date : $today;
             $user_data['uptimelimit'] = 0;
             $user_data['srvid'] = 0;
