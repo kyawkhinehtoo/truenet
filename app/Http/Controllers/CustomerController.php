@@ -734,6 +734,12 @@ class CustomerController extends Controller
             $radiusController = new RadiusController();
             $radiusUsers = $radiusController->getRadiusUser();
 
+            // Get the status ID for "Suspended"
+            $status_id = Status::where('name', 'Suspended')->pluck('id')->first();
+            $expiryDateCheck = Carbon::now();
+            $expiryDateCheck->modify('-3 months');
+
+
             if ($radiusUsers) {
                 foreach($radiusUsers as $radiusUser) {
                   
@@ -762,28 +768,29 @@ class CustomerController extends Controller
                         if($package){
                             $pacakge_id = $package->id;
                         }
-                  
+                        $expiration = $radiusUser->expiration ?  Carbon::parse($radiusUser->expiration)->setTimezone('Asia/Yangon')->format('Y-m-d H:i:s'): null;
                    
                     if ($customer) {
                         $customer->ftth_id = trim($radiusUser->username);
-                        $customer->name = trim($radiusUser->firstname);
-                        $customer->phone_1 = $phone;
-                        $customer->email = $radiusUser->email;
-                        $customer->address = $radiusUser->address;
-                        $customer->location = $radiusUser->gpslat.','.$radiusUser->gpslong;
-                        $customer->order_date = $date->format('Y-m-d H:i:s');
-                        $customer->installation_date = $date->format('Y-m-d H:i:s');
-                        $customer->service_activation_date = $date->format('Y-m-d H:i:s');
-                        $customer->prefer_install_date = $date->format('Y-m-d H:i:s');
-                        $customer->sale_remark = $radiusUser->comment;
-                        $customer->township_id = $township_id;
-                        $customer->package_id = $pacakge_id;
-                        $customer->sale_person_id = 2;
-                        $customer->status_id = ($radiusUser->enableuser)? 2: 4;
+                        $customer->name = $customer->name ?: trim($radiusUser->firstname);
+                        $customer->phone_1 = $customer->phone_1 ?: $phone;
+                        $customer->email = $customer->email ?: $radiusUser->email;
+                        $customer->address = $customer->address ?: $radiusUser->address;
+                        $customer->location = $customer->location ?: $radiusUser->gpslat.','.$radiusUser->gpslong;
+                        $customer->order_date = $customer->order_date ?: $date->format('Y-m-d H:i:s');
+                        $customer->installation_date = $customer->installation_date ?: $date->format('Y-m-d H:i:s');
+                        $customer->service_activation_date = $customer->service_activation_date ?: $date->format('Y-m-d H:i:s');
+                        $customer->prefer_install_date = $customer->prefer_install_date ?: $date->format('Y-m-d H:i:s');
+                        $customer->sale_remark = $customer->sale_remark ?: $radiusUser->comment;
+                        $customer->township_id = $customer->township_id ?: $township_id;
+                        $customer->package_id = $customer->package_id ?: $pacakge_id;
+                        $customer->sale_person_id = $customer->sale_person_id ?: 2;
+                        $status = ($expiration < $expiryDateCheck) ? $status_id : ($radiusUser->enableuser ? 2 : 4);
+                        $customer->status_id = $status;
                         $customer->deleted = 0;
                         $customer->pppoe_account = $radiusUser->username;
                         $customer->project_id = 1;
-                        $customer->service_off_date = $radiusUser->expiration ?  Carbon::parse($radiusUser->expiration)->setTimezone('Asia/Yangon')->format('Y-m-d H:i:s') : null;
+                        $customer->service_off_date = $expiration;
                         $customer->installation_remark = $radiusUser->custattr;
                         $customer->update();
                        
@@ -803,11 +810,12 @@ class CustomerController extends Controller
                         $customer->township_id = $township_id;
                         $customer->package_id = $pacakge_id;
                         $customer->sale_person_id = 2;
-                        $customer->status_id = ($radiusUser->enableuser)? 2 : 4;
+                        $status = ($expiration < $expiryDateCheck) ? $status_id : ($radiusUser->enableuser ? 2 : 4);
+                        $customer->status_id = $status;
                         $customer->deleted = 0;
                         $customer->pppoe_account = $radiusUser->username;
                         $customer->project_id = 1;
-                        $customer->service_off_date = $radiusUser->expiration ?  Carbon::parse($radiusUser->expiration)->setTimezone('Asia/Yangon')->format('Y-m-d H:i:s') : null;
+                        $customer->service_off_date = $expiration;
                         $customer->installation_remark = $radiusUser->custattr;
                         $customer->save();
                        // echo $customer->ftth_id.'Created!'.PHP_EOL;
