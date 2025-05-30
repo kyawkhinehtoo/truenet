@@ -66,7 +66,7 @@ class IncidentController extends Controller
             ->when($request->status, function ($query, $status) {
                 $query->where('incidents.status', '=', $status);
             }, function ($query) {
-                $query->whereRaw('incidents.status in (1,2,5)');
+                $query->whereRaw('incidents.status in (1,2,5,6)');
             })
             ->when($request->keyword, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
@@ -603,6 +603,8 @@ class IncidentController extends Controller
             $status = "Deleted";
         } else if ($data == 5) {
             $status = "Resolved";
+        }else if ($data == 6) {
+            $status = "Pending";
         }
         return $status;
     }

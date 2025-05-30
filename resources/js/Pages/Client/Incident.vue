@@ -1,12 +1,12 @@
-<template>
+<template >
   <app-layout>
-    <div class="py-1">
+    <div class="py-1" >
       <div class="mx-auto sm:px-6 lg:px-8">
 
-        <div class="py-2 md:inline-flex justify-between w-full gap-4">
-          <div class="flex w-full">
+        <div class="py-2 md:inline-flex justify-between w-full gap-4" @keydown.esc="closeModal">
+          <div class="flex w-full place-items-center align-middle">
             <span
-              class="z-10  font-normal text-gray-400 absolute bg-transparent rounded text-base items-center justify-center  w-8 pl-3 py-4">
+              class="z-10 flex font-normal text-gray-400 absolute bg-transparent text-base justify-center w-8">
               <i class="fas fa-search"></i>
             </span>
             <input type="text" placeholder="Ticket/Customer"
@@ -14,9 +14,9 @@
               id="search" tabindex="1" v-model="search" v-on:keyup.enter="searchIncident" />
           </div>
 
-          <div class="flex w-full">
+          <div class="flex w-full place-items-center align-middle">
             <span
-              class="z-10  font-normal text-gray-400 absolute bg-transparent rounded text-base items-center justify-center  w-8 pl-3 py-4">
+              class="z-10 flex font-normal text-gray-400 absolute bg-transparent text-base justify-center w-8">
               <i class="fas fa-sliders-h"></i>
             </span>
             <select v-model="incidentType"
@@ -24,6 +24,7 @@
               tabindex="3" @change="changeStatus">
               <option value="default">All Ticket</option>
               <option value="service_complaint">Service Complaint</option>
+              <option value="port_down">Port Down</option>
               <option value="onsite_complaint">Onsite Complaint</option>
               <option value="technical_complaint">Technical Complaint</option>
               <option value="plan_change">Plan Change</option>
@@ -32,9 +33,9 @@
             </select>
           </div>
 
-          <div class="flex w-full">
+          <div class="flex w-full place-items-center align-middle">
             <span
-              class="z-10  font-normal text-gray-400 absolute bg-transparent rounded text-base items-center justify-center  w-8 pl-3 py-4">
+              class="z-10 flex font-normal text-gray-400 absolute bg-transparent text-base justify-center w-8">
               <i class="fas fa-sliders-h"></i>
             </span>
             <select v-model="incidentBy"
@@ -45,9 +46,9 @@
 
             </select>
           </div>
-          <div class="flex w-full">
+          <div class="flex w-full place-items-center align-middle">
             <span
-              class="z-10  font-normal text-gray-400 absolute bg-transparent rounded text-base items-center justify-center  w-8 pl-3 py-4">
+              class="z-10 flex font-normal text-gray-400 absolute bg-transparent text-base justify-center w-8">
               <i class="fas fa-sliders-h"></i>
             </span>
             
@@ -57,12 +58,13 @@
               <option value="0">All Status</option>
               <option value="1">Open</option>
               <option value="2">Escalated</option>
+              <option value="6">Pending</option>
               <option value="5">Resolved</option>
               <option value="3">Closed</option>
               <option value="4">Deleted</option>
             </select>
           </div>
-          <div class="flex w-full self-center">
+          <div class="flex w-full place-items-center align-middle">
              
             <VueDatePicker v-model="incidentDate" :range="{ partialRange: true }" placeholder="Ticket Date" 
               :enable-time-picker="false" model-type="yyyy-MM-dd" id="order_date"
@@ -188,8 +190,8 @@
         </div>
       </div>
     </div>
-    <div ref="isOpen" class="fixed z-10 inset-0 overflow-y-auto ease-out duration-400" v-if="isOpen">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div ref="isOpen" class="fixed z-10 inset-0 overflow-y-auto ease-out duration-400" v-if="isOpen" >
+      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0" >
         <div class="fixed inset-0 transition-opacity">
           <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
@@ -197,7 +199,7 @@
 
         <div
           class="bg-gray-50 rounded-sm pt-1 inline-block align-bottom overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full"
-          role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+          role="dialog" aria-modal="true" aria-labelledby="modal-headline" >
           <div class="">
             <!-- ticket input panel -->
             <div class="">
@@ -209,10 +211,10 @@
                   </div>
                   <div class="flex">
                     <span
-                      class="border-0 px-3 py-3 placeholder-gray-300 text-gray-600 relative bg-white bg-white rounded-l-md text-sm shadow outline-none focus:outline-none">
+                      class="border-0 px-3 py-3 placeholder-gray-300 text-gray-600 relative  bg-white rounded-l-md text-sm shadow outline-none focus:outline-none">
                       Ticket ID </span>
                     <input type="text" v-model="form.code" name="code" id="code"
-                      class="mr-2 border-0 px-3 py-3 placeholder-gray-300 text-gray-600 relative bg-white bg-white rounded-r-md text-sm shadow outline-none focus:outline-none"
+                      class="mr-2 border-0 px-3 py-3 placeholder-gray-300 text-gray-600 relative bg-white rounded-r-md text-sm shadow outline-none focus:outline-none"
                       disabled />
                     <ul class="flex col-span-1">
                       <li class="px-2 lg:px-3">
@@ -346,6 +348,7 @@
                             required @change="form.topic = null">
                             <option value="default">Please Choose Ticket Type</option>
                             <option value="service_complaint">Service Complaint</option>
+                            <option value="port_down">Port Down</option>
                             <option value="onsite_complaint">Onsite Complaint</option>
                             <option value="technical_complaint">Technical Complaint</option>
                             <option value="plan_change">Plan Change</option>
@@ -424,6 +427,7 @@
                           <select v-model="form.status"
                             class="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300">
                             <option value="1">Open</option>
+                            <option value="6">Pending</option>
                             <option value="2" disabled>Escalated</option>
                             <option value="5" disabled>Resolved</option>
                             <option value="3">Closed</option>
@@ -531,7 +535,7 @@
                       <div class="py-2 col-span-4 sm:col-span-4" v-if="form.type == 'resume'">
                         <div class="mt-1 flex rounded-md shadow-sm">
                           <span
-                            class="z-10 -mt-1 leading-snug font-normal absolute text-center text-gray-300 absolute bg-transparent rounded text-base items-center justify-center w-8 pl-3 py-3">
+                            class="z-10 -mt-1 leading-snug font-normal  text-center text-gray-300 absolute bg-transparent rounded text-base items-center justify-center w-8 pl-3 py-3">
                             <i class="fas fa-play"></i>
                           </span>
                           <input type="date" v-model="form.start_date" name="start_date" id="start_date"
@@ -747,8 +751,8 @@
                 class="inline-flex items-center px-4 py-3 bg-red-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-400 active:bg-red-600 focus:outline-none focus:border-gray-500 disabled:opacity-25 transition mr-1"
                 v-show="selected_id">Delete<i class="lg:ml-1 fas fa-trash opacity-75 text-sm"></i></button>
             </div>
-            <div class="flex">
-              <button @click="closeModal" type="button"
+            <div class="flex"  >
+              <button @click="closeModal" type="button" 
                 class="inline-flex items-center px-4 py-3 bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-gray-600 uppercase tracking-widest hover:bg-gray-300 active:bg-gray-400 focus:outline-none focus:border-gray-500 disabled:opacity-25 transition">Close
                 <i class="lg:ml-1 fas fa-times-circle opacity-75 text-sm"></i></button>
             </div>
@@ -777,7 +781,7 @@ import File from "@/Components/File";
 import CustomerDetail from "@/Components/CustomerDetail";
 import NoData from "@/Components/NoData";
 import Pagination from "@/Components/Pagination";
-import { reactive, ref, onMounted, onUpdated, provide } from "vue";
+import { reactive, ref, onMounted, onUpdated, onBeforeUnmount,provide } from "vue";
 import Multiselect from "@suadelabs/vue3-multiselect";
 import { router } from '@inertiajs/vue3';
 import { useForm } from "@inertiajs/vue3";
@@ -978,6 +982,8 @@ export default {
         status = "Deleted";
       } else if (data == 5) {
         status = "Resolved";
+      } else if (data == 6) {
+        status = "Pending";
       }
       return status;
     }
@@ -1133,7 +1139,14 @@ export default {
         });
       }
     }
+    const escKey =(e)=> {
+
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    }
     onMounted(() => {
+      window.addEventListener('keydown', escKey)
       console.log("Incident - On Mounted");
       props.packages.map(function (x) {
         return (x.item_data = `${x.name}`);
@@ -1141,7 +1154,9 @@ export default {
 
       priorityColor();
     });
-
+    onBeforeUnmount(() => {
+      window.removeEventListener('keydown', escKey)
+    });
     onUpdated(() => {
       console.log("Incident - On Updated");
       props.packages.map(function (x) {
@@ -1150,7 +1165,7 @@ export default {
 
       priorityColor();
     });
-    return { loading, form, openModal, closeModal, newTicket, isOpen, deleteIncident, searchIncident, edit, sortBy, getStatus, changeStatus, sort, search, show, tabClick, tab, selection, selected_id, editMode, typeChange, showPriority, incidentStatus, page_update, alert_edit, submit, clearform, incidentType, incidentBy, incidentDate, formatter };
+    return { loading, form, openModal, closeModal, newTicket, isOpen, deleteIncident, searchIncident, edit, sortBy, getStatus, changeStatus, sort, search, show, tabClick, tab, selection, selected_id, editMode, typeChange, showPriority, incidentStatus, page_update, alert_edit, submit, clearform, incidentType, incidentBy, incidentDate, formatter,escKey };
   },
 };
 </script>
