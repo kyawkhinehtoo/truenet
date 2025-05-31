@@ -18,7 +18,7 @@
                   
              
                 </div>
-                <div class="bg-white rounded-b-lg  divide-y divide-gray-200 text-sm text-center max-h-80 overflow-auto block scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-white w-full">
+                <div class="bg-white rounded-b-lg  divide-y divide-gray-200 text-sm text-center  overflow-auto block scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-white w-full"    :style="{ 'max-height': tableHeigh-170 +'px' }" >
                   <div v-for="row in bundle" v-bind:key="row.id" class="cursor-pointer inline-grid grid-cols-4 gap-2 w-full" >
                    <div class="px-2 py-2 whitespace-nowrap col-span-1"  @click="doEdit(row)">{{ row.code }}</div>
                    <div class="px-2 py-2 whitespace-nowrap col-span-1">{{getDay(row.over)}}</div>
@@ -41,6 +41,11 @@ export default {
   components: { Label },
   name: "IncidentAlert",
   emits: ["show_edit"],
+  props: {
+    tableHeigh: {
+      type: String,
+    },
+  },
   setup(props,context) {
     let bundle = ref("Loading ..");
     let remain = ref("Loading ..");

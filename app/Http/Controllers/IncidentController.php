@@ -58,7 +58,8 @@ class IncidentController extends Controller
             $orderby = $request->sort . ' ' . $request->order;
         }
 
-
+        $pagination = $request->get('pagination', 10); // Default to 10 if not provided
+   
         $incidents =  DB::table('incidents')
             ->join('customers', 'incidents.customer_id', '=', 'customers.id')
             ->join('townships', 'customers.township_id', '=', 'townships.id')
@@ -102,7 +103,7 @@ class IncidentController extends Controller
                 'customers.id as customer_id',
                 'users.name as incharge'
             )
-            ->paginate(10);
+            ->paginate($pagination);
 
         // foreach ($incidents as $value) {
         //     $max_invoice_id =  DB::table('tasks')

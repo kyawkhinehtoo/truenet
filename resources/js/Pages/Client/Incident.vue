@@ -90,7 +90,7 @@
           <div class="lg:col-span-4 md:col-span-6">
 
             <div class="bg-white overflow-auto md:overflow-hidden shadow-xl sm:rounded-lg mt-1" v-if="incidents.data">
-              <table class="min-w-full divide-y divide-gray-200">
+              <table class="min-w-full divide-y divide-gray-200"  ref="myTable">
                 <thead class="bg-gray-50">
                   <tr>
                     <th scope="col"
@@ -135,10 +135,29 @@
                 </tbody>
               </table>
             </div>
-            <span v-if="incidents.total" class="w-full block mt-4">
-              <label class="text-xs text-gray-600">{{ incidents.data.length }} Tickets in Current Page. Total Number of
-                Tickets : {{ incidents.total }}</label>
-            </span>
+            <div v-if="incidents.total" class="w-full mt-4 inline-flex text-xs text-gray-600 items-center gap-2 justify-between">
+              <div>
+                <label>{{ incidents.data.length }} Tickets in Current Page. Total Number of
+                  Tickets : {{ incidents.total }}</label>
+              </div>
+              <div>
+                <label for="pagination">Items per page:</label>
+                <select
+                  id="pagination"
+                  v-model="pagination"
+                  @change="updatePagination"
+                  class="border-gray-300 rounded-md text-xs focus:ring focus:ring-indigo-500 focus:border-indigo-500 mx-4"
+                >
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+               
+              </div>
+            <!-- filepath: /Users/kkh/Projects/truenet/resources/js/Pages/Client/Incident.vue -->
+
             <span v-if="incidents.links">
               <pagination class="mt-4" :links="incidents.links" />
             </span>
@@ -178,7 +197,7 @@
                 </div>
               </div>
             </div>
-            <incident-alert @show_edit="alert_edit" />
+            <incident-alert @show_edit="alert_edit" :tableHeigh="myTable?.clientHeight" />
           </div>
           <!--end of alarm panel -->
         </div>
@@ -787,6 +806,7 @@ import { router } from '@inertiajs/vue3';
 import { useForm } from "@inertiajs/vue3";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
+import Cookies from "js-cookie";
 export default {
   name: "Incident",
   components: {
@@ -829,6 +849,7 @@ export default {
     let incidentType = ref("default");
     let incidentBy = ref("default");
     let incidentDate = ref([]);
+    const myTable = ref(null)
     const formatter = ref({
       date: "YYYY-MM-DD",
       month: "MMM",
@@ -842,7 +863,16 @@ export default {
     provide("packages", props.packages);
     provide("permission", props.permission);
     provide("customers", props.customers);
+    const pagination = ref(Cookies.get("pagination") || 10); // Default to 10 if no cookie is set
 
+    const updatePagination = () => {
+      Cookies.set("pagination", pagination.value, { expires: 7 }); // Store in cookies for 7 days
+      fetchIncidents(); // Fetch data with the updated pagination value
+    };
+    const fetchIncidents = () => {
+      let url = `/incident?pagination=${pagination.value}`;
+      router.get(url, {}, { preserveState: true });
+    };
     const form = useForm({
       id: null,
       code: null,
@@ -1146,6 +1176,7 @@ export default {
       }
     }
     onMounted(() => {
+      fetchIncidents(); 
       window.addEventListener('keydown', escKey)
       console.log("Incident - On Mounted");
       props.packages.map(function (x) {
@@ -1164,8 +1195,9 @@ export default {
       });
 
       priorityColor();
+      console.log('Table height:', myTable.value?.clientHeight)
     });
-    return { loading, form, openModal, closeModal, newTicket, isOpen, deleteIncident, searchIncident, edit, sortBy, getStatus, changeStatus, sort, search, show, tabClick, tab, selection, selected_id, editMode, typeChange, showPriority, incidentStatus, page_update, alert_edit, submit, clearform, incidentType, incidentBy, incidentDate, formatter,escKey };
+    return { loading, form, openModal, closeModal, newTicket, isOpen, deleteIncident, searchIncident, edit, sortBy, getStatus, changeStatus, sort, search, show, tabClick, tab, selection, selected_id, editMode, typeChange, showPriority, incidentStatus, page_update, alert_edit, submit, clearform, incidentType, incidentBy, incidentDate, formatter,escKey,updatePagination,pagination,myTable };
   },
 };
 </script>
