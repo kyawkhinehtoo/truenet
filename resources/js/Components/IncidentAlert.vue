@@ -1,6 +1,8 @@
 <template>
 <div class="w-full flex justify-between text-sm px-2">
 <label class="mt-5 uppercase text-md"> Ticket Overdue Hours Chart</label> 
+
+     
 <button @click="getList()" class="my-2 ml-2 align-right text-center items-center px-3 py-2 bg-indigo-500 border border-transparent rounded-sm font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-400 active:bg-indigo-600 focus:outline-none focus:border-gray-900 disabled:opacity-25 transition mr-1"> <i class="fas fa-sync opacity-75 text-sm"></i></button>
 </div>
 
@@ -11,10 +13,10 @@
     <div class="min-w-full divide-y divide-gray-200 mt-1 shadow-xl">
                 <div class="bg-gray-50 text-center inline-grid grid-cols-4 gap-2rounded-t-lg w-full">
                
-                    <div  class="px-2 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider col-span-1">Ticket ID</div>
-                    <div  class="px-2 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider col-span-1">SLA Overdue</div>
-                    <div  class="px-2 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider col-span-1">Actual Hrs</div>
-                    <div  class="px-2 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider col-span-1">Based  SLA</div>
+                    <div  class="px-2 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider col-span-1 ">Ticket ID </div>
+                    <div  class="px-2 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider col-span-1 cursor-pointer" @click="changeSort('over')">Overdue <i class="fas fa-sort text-gray-400"></i></div>
+                    <div  class="px-2 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider col-span-1 cursor-pointer" @click="changeSort('actual')">Actual Hrs <i class="fas fa-sort text-gray-400"></i></div>
+                    <div  class="px-2 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider col-span-1 cursor-pointer" @click="changeSort('sla')">Based  SLA <i class="fas fa-sort text-gray-400"></i></div>
                   
              
                 </div>
@@ -44,14 +46,16 @@ export default {
   props: {
     tableHeigh: {
       type: String,
+    
     },
   },
   setup(props,context) {
     let bundle = ref("Loading ..");
     let remain = ref("Loading ..");
-    const getData = async () => {
-      let url = "/incidentOverdue";
-      console.log(url);
+    let sortBy = ref('code');
+    let order = ref('asc');
+   const getData = async () => {
+      let url = `/incidentOverdue?sortBy=${sortBy.value}&order=${order.value}`;
       try {
         const res = await fetch(url);
         const data = await res.json();
@@ -59,8 +63,7 @@ export default {
       } catch (err) {
         console.error(err);
       }
-      
-    }
+    };
     const getRemain = async () => {
       let url = "/incidentRemain";
       console.log(url);
@@ -124,11 +127,18 @@ export default {
        });
      
     }
+    function changeSort(sort) {
+      order.value = order.value === "asc" ? "desc" : "asc";
+      sortBy.value = sort;
+      context.emit("sort_change", sort, order.value);
+      getList();
+    }
+    
     onMounted(() => {
       getList();
       //let timer = setInterval(getList, 60000);
     });
-    return { bundle, remain, getList ,getDay,percenttosecond,doEdit};
+    return { bundle, remain, getList ,getDay,percenttosecond,doEdit, changeSort };
   },
 };
 </script>

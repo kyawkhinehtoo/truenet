@@ -7,8 +7,9 @@ use App\Traits\IncidentTrait;
 class IncidentAlertController extends Controller
 {
     use IncidentTrait;
-    public function getOverdue(){
-        $over_sla = $this->getTimeOverdue();
+    public function getOverdue(Request $request){
+
+        $over_sla = $this->getTimeOverdue($request->sortBy, $request->order);
         return $over_sla;
     }
     public function getRemain(){

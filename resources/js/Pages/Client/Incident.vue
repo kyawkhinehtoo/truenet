@@ -197,7 +197,11 @@
                 </div>
               </div>
             </div>
-            <incident-alert @show_edit="alert_edit" :tableHeigh="myTable?.clientHeight" />
+             <incident-alert
+              :tableHeigh="myTable?.clientHeight"
+              @show_edit="alert_edit"
+            />
+            <!-- <incident-alert @show_edit="alert_edit" :tableHeigh="myTable?.clientHeight" /> -->
           </div>
           <!--end of alarm panel -->
         </div>
@@ -849,6 +853,8 @@ export default {
     let incidentType = ref("default");
     let incidentBy = ref("default");
     let incidentDate = ref([]);
+
+
     const myTable = ref(null)
     const formatter = ref({
       date: "YYYY-MM-DD",
@@ -864,6 +870,7 @@ export default {
     provide("permission", props.permission);
     provide("customers", props.customers);
     const pagination = ref(Cookies.get("pagination") || 10); // Default to 10 if no cookie is set
+  
 
     const updatePagination = () => {
       Cookies.set("pagination", pagination.value, { expires: 7 }); // Store in cookies for 7 days
@@ -937,6 +944,7 @@ export default {
 
     function alert_edit(data) {
       let edit_data = props.incidents_2.filter((d) => d.id == data.id)[0];
+      console.log("edit data", edit_data);
       edit(edit_data);
     }
     function edit(data) {
@@ -1092,8 +1100,11 @@ export default {
     };
     const getURL = () => {
       let suburl = "";
+      if(pagination.value != null) {
+        suburl = "?pagination=" + pagination.value;
+      }
       if (search.value != null) {
-        suburl = "&keyword=" + search.value;
+        suburl += "&keyword=" + search.value;
       }
       if (incidentType.value != "default") {
         suburl += "&type=" + incidentType.value;
@@ -1197,7 +1208,8 @@ export default {
       priorityColor();
       console.log('Table height:', myTable.value?.clientHeight)
     });
-    return { loading, form, openModal, closeModal, newTicket, isOpen, deleteIncident, searchIncident, edit, sortBy, getStatus, changeStatus, sort, search, show, tabClick, tab, selection, selected_id, editMode, typeChange, showPriority, incidentStatus, page_update, alert_edit, submit, clearform, incidentType, incidentBy, incidentDate, formatter,escKey,updatePagination,pagination,myTable };
+    return { loading, form, openModal, closeModal, newTicket, isOpen, deleteIncident, searchIncident, edit, sortBy, getStatus, changeStatus, sort, search, show, tabClick, tab, selection, selected_id, editMode, typeChange, showPriority, incidentStatus, page_update, alert_edit, submit, clearform, incidentType, incidentBy, incidentDate, formatter,escKey,updatePagination,pagination,myTable, 
+      };
   },
 };
 </script>

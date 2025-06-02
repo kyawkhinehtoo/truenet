@@ -7,37 +7,81 @@ trait IncidentTrait {
 
     private $min_hr = 4;
 
-    public function getTimeOverdue() {
-       // select i.id, i.code,i.date,i.time, c.ftth_id, s.percentage from incidents i join customers c join packages p join sla s where i.customer_id = c.id and c.package_id = p.id and p.sla_id = s.id and i.status <> 0 and i.status <> 2;
-       $incident_list = array();
-       $incidents = DB::table('incidents')
-       ->join('customers', 'incidents.customer_id', '=', 'customers.id')
-       ->join('packages','customers.package_id','=','packages.id')
-       ->join('sla','packages.sla_id','=','sla.id')
-       ->where('incidents.status','<>',3)
-       ->where('incidents.status','<>',4)
-       ->select(
-           'incidents.id',
-           'incidents.code',
-           'incidents.date',
-           'incidents.time',
-           'customers.ftth_id as ftth_id',
-           'sla.percentage as percentage',)
-       ->orderBy('incidents.id','desc')
-       ->get();
-       if(count($incidents)){
-           foreach ($incidents as $incident) {
+    public function getTimeOverdue($sortBy = 'over' ,$order = 'asc') {
+   
+        $incident_list = array();
+        $incidents = DB::table('incidents')
+            ->join('customers', 'incidents.customer_id', '=', 'customers.id')
+            ->join('packages','customers.package_id','=','packages.id')
+            ->join('sla','packages.sla_id','=','sla.id')
+            ->where('incidents.status','<>',3)
+            ->where('incidents.status','<>',4)
+            ->select(
+                'incidents.id as id',
+                'incidents.code',
+                'incidents.date',
+                'incidents.time',
+                'customers.ftth_id as ftth_id',
+                'sla.percentage as percentage'
+            )
+            ->orderBy('incidents.id','desc')
+            ->get()
+            ->toArray();
+
+        if(count($incidents)){
+            foreach ($incidents as $incident) {
                 $incident_percentage = $this->percentageToSecond($incident->percentage);
                 $date_time = $incident->date.' '.$incident->time;
                 $diff = $this->dateDiff($date_time);
                 if($diff >= $incident_percentage){
                     $incident->diff = $diff;
                     $incident->over = $diff - $incident_percentage;
-                    array_push($incident_list,$incident);
+                    $incident_list[] = $incident;
                 }
-           }
-       }
-       return $incident_list;
+            }
+
+            if ($sortBy === 'code') {
+                // Sort by code using natural order for strings
+                if ($order === 'desc') {
+                    usort($incident_list, function($a, $b) {
+                      
+                        return strnatcasecmp($b->code, $a->code);
+                    });
+                } else {
+                    usort($incident_list, function($a, $b) {
+                        
+                        return strnatcasecmp($a->code, $b->code);
+                    });
+                }
+            } elseif ($sortBy === 'over') {
+                // Sort by diff ascending, then over ascending
+                usort($incident_list, function($a, $b) use ($order) {
+                    if ($order === 'desc') {
+                        return $b->over <=> $a->over;
+                    }
+                    
+                    return $a->diff <=> $b->diff;
+                });
+            } elseif ($sortBy === 'actual') {
+                // Sort by diff descending, then over descending
+                usort($incident_list, function($a, $b) use ($order) {
+                    if ($order === 'desc') {
+                        return $b->diff <=> $a->diff;
+                    }
+                    return $a->over <=> $b->over;
+                });
+            } else if($sortBy === 'sla'){
+                // Sort by percentage ascending
+                usort($incident_list, function($a, $b) use ($order) {
+                    if ($order === 'desc') {
+                        return $b->percentage <=> $a->percentage;
+                    }
+                     
+                    return $a->percentage <=> $b->percentage;
+                });
+            } 
+        }
+        return $incident_list;
     }
     public function getTimeRemain() {
         // select i.id, i.code,i.date,i.time, c.ftth_id, s.percentage from incidents i join customers c join packages p join sla s where i.customer_id = c.id and c.package_id = p.id and p.sla_id = s.id and i.status <> 0 and i.status <> 2;
@@ -81,7 +125,7 @@ trait IncidentTrait {
             $seconds = $a_week - ($percentage/100) * $a_week;
         }else if($period == 'year'){
             $seconds = $a_year - ($percentage/100) * $a_year;
-        }else{
+        } else {
             $seconds = $a_month - ($percentage/100) * $a_month;
         }
         return $seconds;
